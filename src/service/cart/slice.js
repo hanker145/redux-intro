@@ -35,6 +35,7 @@ export const cartSlice = createSlice({
         }
     }
 })
+// eslint-disable-next-line
 const { actions, reducers } = cartSlice
 export const { addToCart, removeCart } = actions
 // export default reducers
