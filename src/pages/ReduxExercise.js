@@ -3,8 +3,9 @@ import { Container, Button, Typography, Box, Grid } from "@mui/material"
 import productOne from "../images/product1.gif";
 import productTwo from "../images/product2.gif";
 import ReactJson from "react-json-view";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import WrapperBox from "../components/WrapperBox";
+import { addToCart, removeCart } from "../service/cart/slice";
 
 const RootComponent = (props) => {
   return (
@@ -38,7 +39,7 @@ const ProductPage = (props) => {
         <Grid item md={6} xs={12}>
           <ProductOne />
         </Grid>
-        <Grid item md={6} xs={12}>
+        <Grid item md={6} sx={12}>
           <ProductTwo />
         </Grid>
       </Grid>
@@ -49,7 +50,7 @@ const ProductPage = (props) => {
 const CartPage = (props) => {
   // Step 6
   // Replace the line below to get data of the second product from state.cart.totalPrice
-  const totalPrice = "...";
+  const totalPrice = useSelector((state) => state.cart.totalPrice);
 
   return (
     <WrapperBox>
@@ -59,13 +60,13 @@ const CartPage = (props) => {
         {`})`}
       </Typography>
       <Grid container spacing={2} p="1rem">
-        <Grid item md={6} xs={12}>
+        <Grid item md={6} sx={12}>
           <CartProductOne />
         </Grid>
-        <Grid item md={6} xs={12}>
+        <Grid item md={6} sx={12}>
           <CartProductTwo />
         </Grid>
-        <Grid item xs={12}>
+        <Grid item sx={12}>
           <Typography p="0.5rem" variant="h5">Total Price: 💵 {totalPrice}</Typography>
         </Grid>
       </Grid>
@@ -77,7 +78,8 @@ const ProductOne = (props) => {
   // Step 4
   // Replace the line below to get data of the first product from state.product
   // You should see the price is updated
-  const product = { id: "...", title: "...", price: "..." };
+  const product = useSelector((state) => state.product[0]);
+
 
   // Step 7
   // Define: const dispatch = useDispatch();
@@ -86,6 +88,14 @@ const ProductOne = (props) => {
   // Make the function handle onClick event of the button
   // eslint-disable-next-line
   const dispatch = useDispatch();
+
+  const addProduct = () => {
+    dispatch(addToCart(product));
+  };
+
+  const removeProduct = () => {
+    dispatch(removeCart(product));
+  };
 
   // Step 8
   // Create a function to handle click event of the button Remove
@@ -106,10 +116,17 @@ const ProductOne = (props) => {
         </Grid>
         <Grid item xs={8} >
           <div style={{ display: "flex", justifyContent: "space-around" }}>
-            <Button variant="success" sx={{ width: "5rem" }}>
+            <Button
+              variant="success"
+              sx={{ width: "5rem" }}
+              onClick={addProduct}>
               Add
             </Button>
-            <Button variant="error" sx={{ width: "5rem" }}>
+            <Button
+              variant="error"
+              sx={{ width: "5rem" }}
+              onClick={removeProduct}
+            >
               Remove
             </Button>
           </div>
@@ -123,11 +140,20 @@ const ProductTwo = (props) => {
   // Step 5
   // Replace the line below to get data of the second product from state.product
   // You should see the price is updated
-  const product = { id: "...", title: "...", price: "..." };
+  const product = useSelector((state) => state.product[1]);
 
   // Step 9
   // Repeat step 7 and 8 for this component
 
+  const dispatch = useDispatch();
+
+  const addProduct = () => {
+    dispatch(addToCart(product));
+  };
+
+  const removeProduct = () => {
+    dispatch(removeCart(product));
+  };
   return (
     <WrapperBox>
       <Typography p="0.5rem" variant="h5" sx={{ backgroundColor: "primary.main", color: "primary.contrastText" }}>
@@ -142,10 +168,17 @@ const ProductTwo = (props) => {
         </Grid>
         <Grid item xs={8} >
           <div style={{ display: "flex", justifyContent: "space-around" }}>
-            <Button variant="success" sx={{ width: "5rem" }}>
+            <Button
+              variant="success"
+              sx={{ width: "5rem" }}
+              onClick={addProduct}>
               Add
             </Button>
-            <Button variant="error" sx={{ width: "5rem" }}>
+            <Button
+              variant="error"
+              sx={{ width: "5rem" }}
+              onClick={removeProduct}
+            >
               Remove
             </Button>
           </div>
@@ -158,9 +191,9 @@ const ProductTwo = (props) => {
 const CartProductOne = (props) => {
   // Step 2
   // Replace the line below to get data of the first product from state.cart.products
-  // Change the price of products in `service/cart/slice.js` to see the effect
-  const product = { price: "...", qty: "..." };
-
+  // Change the price of products in `cart.reducer.js` to see the effect
+  const product = useSelector((state) => state.cart.products[0]);
+  console.log("prodcut", product)
   return (
     <WrapperBox>
       <Typography p="0.5rem" variant="h5" sx={{ backgroundColor: "primary.main", color: "primary.contrastText" }}>
@@ -181,8 +214,9 @@ const CartProductOne = (props) => {
 const CartProductTwo = (props) => {
   // Step 3
   // Replace the line below to get data of the second product from state.cart.products
-  // Change the price of products in `service/cart/slice.js` to see the effect
-  const product = { price: "...", qty: "..." };
+  // Change the price of products in `cart.reducer.js` to see the effect
+  const product = useSelector((state) => state.cart.products[1]);
+
 
   return (
     <WrapperBox>
@@ -202,8 +236,9 @@ const CartProductTwo = (props) => {
 const Store = (props) => {
   // Step 1
   // use useSelector() to get the data of products and cart in the store
-  // pass {cart, product} to the src attribute of the component <ReactJson/>
-
+  // pass {products, cart} to the src attribute of the component <ReactJson/>
+  const products = useSelector((state) => state.product);
+  const cart = useSelector((state) => state.cart);
   return (
     <WrapperBox>
       <Typography p="0.5rem" variant="h5" sx={{ backgroundColor: "primary.main", color: "primary.contrastText" }}>
@@ -212,7 +247,7 @@ const Store = (props) => {
       <Box sx={{ textAlign: "start" }}>
         <ReactJson
           name="store"
-          src={{}}
+          src={{ products, cart }}
           theme="monokai"
           displayDataTypes={false}
           displayObjectSize={false}
